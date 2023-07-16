@@ -34,7 +34,7 @@ INVOICE_STATUS = [
 
 class SaleOrder(models.Model):
     _name = 'sale.order'
-    _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin', 'utm.mixin']
+    _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin', 'utm.mixin', 'delivery.options']
     _description = "Sales Order"
     _order = 'date_order desc, id desc'
     _check_company_auto = True
@@ -50,8 +50,44 @@ class SaleOrder(models.Model):
         if self._context.get('sale_show_partner_name'):
             return ['name', 'partner_id.name']
         return ['name']
+    
+    #=== ADDED DELIVERY FIELDS ===#
+
+    delivery_timing = fields.Selection(
+        [ ('asap','ASAP'),  ('move','Verhuis'), ('contruction','Nieuwbouw'), ('client_choise','Latere datum')],
+        string="Levering vanaf",
+        required=True
+        
+    )
+
+    delivery_timing_date = fields.Date(string="Levering mogelijk vanaf")
+
+    delivery_location = fields.Selection(
+         [('house', 'Huis'), ('apartment', 'Appartement')],
+        string="Type woning"
+    )
+
+    delivery_floor = fields.Integer(string="Verdieping")
+
+    delivery_floor_elevator = fields.Boolean(string="Lift beschikbaar")
+
+    delivery_elevator_width = fields.Integer(string="Breedte lift")
+
+    delivery_elevator_depth = fields.Integer(string="Diepte lift")
+
+    delivery_elevator_height = fields.Integer(string="Hoogte lift")
+
+    delivery_staircase_type = fields.Selection(
+         [('straight', 'Rechte trap'), ('corner', 'Rechte trap met een knik'), ('spiral', 'Wenteltrap')],
+        string="Type trap"
+    )
+
+    delivery_staircase_width = fields.Integer(string="Breedte trap")
+
+
 
     #=== FIELDS ===#
+    
 
     name = fields.Char(
         string="Order Reference",
